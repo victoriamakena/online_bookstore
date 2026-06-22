@@ -20,7 +20,7 @@
     <v-row>
         <v-col class="text-center">
             <div class="text-display-medium mb-12">Welcome to Brewed Pages!</div>
-            <div class="text-title-large font-weight-light text-medium-emphasis mb-8 ">Hello and welcome again to the beautiful world of deep diving into reading. Where vast access to knowlegde is just like a cup of coffee, within arm's reach.   </div>
+            <div class="text-title-large font-weight-light text-medium-emphasis mb-8 ">Hello and welcome again to the beautiful world of deep diving into reading. Where vast access to knowledge is just like a cup of coffee, within arm's reach.   </div>
             <div class="text-title-large font-weight-light text-medium-emphasis mb-8">Here you will find many different books which are accustomed to many tastes and prefeences. Enjoy your time as you go through our vast selection of books and feel free to inquire on the areas you require assistance.</div>
 
         </v-col>
