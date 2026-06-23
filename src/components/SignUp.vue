@@ -35,7 +35,7 @@ function register()
         location: location.value,
         address: address.value,
         password: password.value,
-        role: 2,  //for determining the information that will be displayed to the ue=ser e.g user or admin
+        role: 2,  //for determining the information that will be displayed to the user e.g user or admin
         //role 1- admin , role 2- customer
     }
      signup(data)   //to move to another page
