@@ -1,5 +1,10 @@
 <script setup>
 import { ref } from 'vue'
+import { useAuth } from '@/services/auth'
+import { useRouter } from 'vue-router'
+const router = useRouter();
+
+const { signup } = useAuth()
 
 const showPassword = ref(false)
 const password = ref(null) 
@@ -9,7 +14,7 @@ const showConfirm = ref(false)
 const rules = {
     required: value => !!value || 'Required.', //if statement
     min: v => v.length >= 8 || 'Min 8 characters', //if statement
-    passwordMatch: () => password == confirmPassword || 'Passwords must match' //function to check passwords are matching
+    passwordMatch: () => password == confirmPassword || 'Passwords must match' //function to check passwords are matching and the two straight lines represent 'or'
   }
 
 // data models
@@ -29,23 +34,27 @@ function register()
         phone: phone.value,
         location: location.value,
         address: address.value,
-        password: password.value
+        password: password.value,
+        role: 2,  //for determining the information that will be displayed to the ue=ser e.g user or admin
+        //role 1- admin , role 2- customer
     }
-    try {
-        localStorage.setItem("user", JSON.stringify(data))
-    }catch{
-        console.log("Error signing up")
-    }
+     signup(data)   //to move to another page
+    router.push('/').then(() => {    //to refresh the page 
+         router.go(0)
+    });
 }
 
 </script>
 
 <template>
-<v-container align="center" class="mt-16">
+<v-container align="center" class="mt-1">
     <v-row>
         <v-col>
             <v-card max-width="80%" color="primary"> 
-                <v-form class="mt-12 mb-6 mr-12">
+                <v-img src="/FullLogo_Transparent.png" height="120" width="500" class="mt-2"></v-img>
+                <v-card-title class="ma-5">Sign Up</v-card-title>
+                <v-divider></v-divider>
+                <v-form class="ma-8">
                     <v-row>
                         <v-col md="3">
                              <div>First Name</div>
@@ -119,11 +128,12 @@ function register()
                     </v-row>
                     <v-row>
                         <v-col md="6">
-                            <v-btn @click="register()">Sign Up</v-btn>
+                            <v-btn @click="register()" block>Sign Up</v-btn>
                         </v-col>
                         <v-col md="6">
                             <div>
                                 Already have an account?
+                                <router-link to="/login"></router-link>
                             </div>
                         </v-col>
                     </v-row>
