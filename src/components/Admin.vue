@@ -27,6 +27,7 @@ const allOrders = Object.values(orders).map(order => {
 });
 
 const tab = ref(null)
+const refreshKey = ref(0);
 const showAddBookDialog = ref(false)
 const showEditBookDialog = ref(false)
 const showAddUserDialog = ref(false)
@@ -52,7 +53,7 @@ const rating = ref(null)
 function addBook(){
     const bookData ={
         bookId: bookId.value,
-        bookName: bookName.value,
+        name: bookName.value,
         price: price.value,
         description: description.value,
         long_description: long_description.value,
@@ -61,11 +62,9 @@ function addBook(){
         author: author.value,
         rating: rating.value
     }
-    //to do: update books in the store
-    const updateBook = {
-        ...books,
-        14: bookData
-    }
+    // update books in the store
+    booksStore.addBook(bookData)
+    close()
 }
 
 //edit book
@@ -82,11 +81,11 @@ function editBook(book){
     showEditBookDialog.value = true
 }
 
-
+//update book
 function updateBook(){
     const bookData ={
         bookId: bookId.value,
-        bookName: bookName.value,
+        name: bookName.value,
         price: price.value,
         description: description.value,
         long_description: long_description.value,
@@ -96,8 +95,14 @@ function updateBook(){
         rating: rating.value
     }
     //to do update book
-
-close()
+    booksStore.edit(bookId.value, bookData)
+    close()
+    refreshKey.value += 1
+}
+//delete
+function destroyBook(id){
+    booksStore.deleteBook(id);
+    refreshKey.value += 1;
 }
 
 //user models
@@ -122,7 +127,8 @@ function addUser(){
         password: "qwerty4321",
         role: 2, 
     }
-    //to do : add user
+    //add user
+    usersStore.addUser(data)
     close()
 }
 
@@ -130,7 +136,7 @@ function addUser(){
 function editUser(user){
     userId.value = user.id
     firstname.value = user.firstname
-    lastname.value = user.firstname
+    lastname.value = user.lastname
     email.value = user.email
     phone.value = user.phone
     location.value = user.location
@@ -151,8 +157,16 @@ function updateUser(){
         password: "qwerty4321",
         role: 2, 
     }
-    //to do : edit user
+    //edit user
+    usersStore.editUser(userId.value, data)
+    refreshKey.value +=1
     close()
+}
+
+//delete user
+function destroyUser(id){
+    usersStore.deleteUser(id);
+    refreshKey.value += 1
 }
 
 function close(){
@@ -183,7 +197,7 @@ function close(){
 </script>
 
 <template>
-    <v-container class="text-center mt-12 bg-secondary">
+    <v-container class="text-center mt-12 bg-secondary" :key="refreshKey">
         <v-card>
             <v-tabs v-model="tab" align-tabs="center" color="primary" >
                 <v-tab :value="1">Books</v-tab>
@@ -191,8 +205,8 @@ function close(){
                 <v-tab :value="3">Orders</v-tab>
             </v-tabs>
         
-                <!-- Books -->
             <v-tabs-window v-model="tab"> 
+                 <!-- Books -->
                 <v-tabs-window-item :value="1">
                     <div v-if="books == null||books==undefined||Object.keys(books).length == 0" align="center">
                         <v-row>
@@ -231,7 +245,7 @@ function close(){
                                         <td>{{ item.genre }}</td>
                                         <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
                                         <td> <v-btn color="primary" size="small" @click="editBook(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        <td> <v-btn color="error" size="small"@click="destroyBook(item.id)"><v-icon icon="mdi-delete"  ></v-icon> Delete</v-btn> </td>
                                     </tr>
                                 </tbody>
                             </v-table>
@@ -284,7 +298,7 @@ function close(){
                                         <td>{{ item.phone }}</td>
                                         <td> <v-btn color="warning" size="small"><v-icon icon="mdi-eye" ></v-icon> View</v-btn> </td>
                                         <td> <v-btn color="primary" size="small" @click="editUser(item)"><v-icon icon="mdi-pencil" ></v-icon> Edit</v-btn> </td>
-                                        <td> <v-btn color="error" size="small"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
+                                        <td> <v-btn color="error" size="small" @click="destroyUser(item.id)"><v-icon icon="mdi-delete" ></v-icon> Delete</v-btn> </td>
                                     </tr>
                                 </tbody>
                             </v-table>
@@ -318,7 +332,7 @@ function close(){
                             <v-table class="border">
                                 <thead>
                                     <tr>
-                                        <th class="text-left"> Cutomer </th>
+                                        <th class="text-left"> Customer </th>
                                         <th class="text-left"> Books</th>
                                         <th class="text-left"> Price </th>
                                         <th class="text-left"> Quantity </th>
@@ -330,7 +344,7 @@ function close(){
                                 <tbody>
                                     <tr v-for="item in allOrders" :key="item.id" >
                                         <td>{{ item.customer }}</td>
-                                        <td>{{ item.book }}</td>
+                                        <td>{{ item.bookName }}</td>
                                         <td>{{ item.price }}</td>
                                         <td>{{ item.quantity }}</td>
                                         <td>{{ item.total_paid }}</td>

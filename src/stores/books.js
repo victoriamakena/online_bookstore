@@ -54,7 +54,7 @@ export const useBooksStore = defineStore('books',  {
               name: "Thinking, Fast and Slow",
               price:  2000,
               description: "Explores the two systems of thinking that drive human judgment and decision-making.",
-              author: "Daniel Khaneman",
+              author: "Daniel Kahneman",
               long_description: "Nobel Prize-winning psychologist Daniel Kahneman explains how the mind operates through two systems of thinking: a fast, intuitive system and a slower, analytical one. The book explores cognitive biases and decision-making.",
               genre: "Psychology",
               rating: 4.2
@@ -100,7 +100,7 @@ export const useBooksStore = defineStore('books',  {
               description: "A guide to building successful businesses through experimentation and continuous learning.",
               author: "Eric Ries",
               long_description: "Entrepreneur Eric Ries introduces a methodology for launching startups in uncertain environments. Instead of spending years perfecting a product before release, Ries advocates creating a minimum viable product (MVP), testing assumptions with real customers, and adapting based on feedback. The book emphasizes rapid experimentation, validated learning, and efficient resource use, making it a foundational text for modern entrepreneurs and product developers.",
-              genre: "Entreprenuership",
+              genre: "Entrepreneurship",
               rating: 4.4
           },
             9 : {
@@ -139,7 +139,7 @@ export const useBooksStore = defineStore('books',  {
             12 : {
               id: 13,
               image: "/book13.jpg",
-              name: "Existensialism is a Humanity",
+              name: "Existentialism is a Humanity",
               price:  1700,
               description: "A defense of existentialist philosophy that argues people create meaning through their choices and actions.",
               author: "Jean-Paul Sartre",
@@ -170,6 +170,55 @@ export const useBooksStore = defineStore('books',  {
        updateSelectedBook (payload) {
            this.selectedBook = payload
        },
+        addBook(payload) {
+          //get the lat key in the books object
+          const existingKeys = Object.keys(this.books).map(Number);
+          const nextKey = existingKeys.length > 0 ? Math.max(...existingKeys) + 1 : 0;
+
+          const existingIds = Object.values(this.books).map(b => (b && b.id) ? b.id : 0);
+          const nextId = existingIds.length > 0 ? Math.max(...existingIds) + 1 : 1;
+
+          // insert into object using a unique `id` and the next object key
+          const { bookId, ...rest } = payload || {};
+          this.books[nextKey] = {
+            ...rest,
+            id: nextId
+          };
+        },
+        edit(id, payload) {
+          //find the book in the object
+            const book = Object.entries(this.books).find(
+                ([key, item]) => item.id === id //compare the id's
+            );
+            //check......! means not
+            if (!book) {
+                console.error(`No book found with id: ${id}`);
+                return;
+            }
+
+            const [objectKey] = book;
+
+            // Avoid accidentally adding a `bookId` property to the stored object
+            // (Admin UI sends `bookId`), and merge only the real fields.
+            const { bookId, ...rest } = payload || {};
+            this.books[objectKey] = {
+              ...this.books[objectKey], 
+              ...rest
+            };
+        },
+        deleteBook(id) {
+            const book = Object.entries(this.books).find(
+                ([key, item]) => item.id === id
+            );
+            if (!book) {
+                console.error(`Cannot delete: No book found id: ${id}`);
+                return;
+            }
+
+            const [objectKey] = book;
+
+            delete this.books[objectKey];
+        }
    },
    persist: true,
 })
